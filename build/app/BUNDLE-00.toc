@@ -1,0 +1,3 @@
+([('app',
+   '/Users/itoujunpei/wkspace/dev/ribbon/haru-ble-health-rate/health-rate/dist/app',
+   'EXECUTABLE')],)
