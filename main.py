@@ -10,7 +10,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 # ===== Polar H10 の設定 =====
-POLAR_H10_ADDRESS = "7A8C6159-C50B-0651-3075-5411D72CA0E9"
+POLAR_H10_ADDRESS = "F219825A-C785-E17A-BB0A-313638FF73B2"
 PMD_CONTROL_UUID = "FB005C81-02E7-F387-1CAD-8ACD2D8DF0C8"
 PMD_DATA_UUID = "FB005C82-02E7-F387-1CAD-8ACD2D8DF0C8"
 ECG_WRITE = bytearray([0x02, 0x00, 0x00, 0x01, 0x82, 0x00, 0x01, 0x01, 0x0E, 0x00])
@@ -91,6 +91,8 @@ def heart_rate_notification_handler(sender: str, data: bytearray):
 async def ble_main():
     print(f"=== Polar H10 ({POLAR_H10_ADDRESS}) への接続を試みます ===")
     async with BleakClient(POLAR_H10_ADDRESS, timeout=30.0) as client:
+        print("+++ 接続中 +++")
+        await client.connect(timeout=20.0)
         print("+++ 接続完了 +++")
         print("=== ECG取得開始コマンドを送信 ===")
         await client.write_gatt_char(PMD_CONTROL_UUID, ECG_WRITE)
