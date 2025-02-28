@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 
 # ===== Polar H10 の設定 =====
 POLAR_H10_ADDRESS = "F219825A-C785-E17A-BB0A-313638FF73B2"
+
 PMD_CONTROL_UUID = "FB005C81-02E7-F387-1CAD-8ACD2D8DF0C8"
 PMD_DATA_UUID = "FB005C82-02E7-F387-1CAD-8ACD2D8DF0C8"
 ECG_WRITE = bytearray([0x02, 0x00, 0x00, 0x01, 0x82, 0x00, 0x01, 0x01, 0x0E, 0x00])
@@ -149,14 +150,15 @@ def update_graph(n):
     if len(data) > window_size:
         data = data[-window_size:]
         times = times[-window_size:]
-    fig = px.line(x=times, y=data, title="リアルタイム ECG (最新10秒)")
+    # DataFrame に変換して Plotly Express に渡す
+    df = pd.DataFrame({"time": times, "ecg": data})
+    fig = px.line(df, x="time", y="ecg", title="リアルタイム ECG (最新10秒)")
     fig.update_layout(xaxis_title="Time (s)", yaxis_title="ECG Value")
     # Rピーク検出（ECG から心拍数推定）
-    ecg_hr = 0
     if len(data) > 0:
         data_array = np.array(data)
         peaks, _ = find_peaks(data_array, distance=SAMPLING_RATE * 0.3,
-                              prominence=0.5 * np.std(data_array))
+                                prominence=0.5 * np.std(data_array))
         fig.add_scatter(x=np.array(times)[peaks],
                         y=data_array[peaks],
                         mode='markers',
